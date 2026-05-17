@@ -1,6 +1,12 @@
 class HomeController < ApplicationController
   def index
-    @users = User.all
+    @users = User.where.not(id: current_user.id)
+
+    @selected_user = if params[:user_id].present?
+                        User.find(params[:user_id])
+                      else
+                        @users.first
+                      end
 
     @comments = fetch_comments
 
@@ -11,11 +17,27 @@ class HomeController < ApplicationController
 
   private
 
+  # def fetch_comments
+  #   scope = Comment.includes(:user)
+  #                  .where(user: [current_user, @selected_user])
+  #                  .order(created_at: :asc)
+  #
+  #   if params[:q].present?
+  #     ids = Comment.search(params[:q]).map(&:id)
+  #     scope = scope.where(id: ids)
+  #   end
+  #
+  #   scope
+  # end
+
   def fetch_comments
+    scope = Comment.includes(:user).where(user: [current_user, @selected_user])
+
     if params[:q].present?
-      Comment.search(params[:q], sort: ["created_at:desc"])
-    else
-      Comment.includes(:user).order(created_at: :desc)
+      ids = Comment.search(params[:q]).map(&:id)
+      scope = scope.where(id: ids)
     end
+
+    scope.order(created_at: :asc)
   end
 end

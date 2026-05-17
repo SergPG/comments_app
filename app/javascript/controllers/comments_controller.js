@@ -3,7 +3,7 @@ import { FetchRequest } from "@rails/request.js"
 
 // Connects to data-controller="comments"
 export default class extends Controller {
-  static targets = ["modal"]
+  static targets = ["modal", "actions"]
 
   connect() {
     this.activeComment = null
@@ -17,6 +17,12 @@ export default class extends Controller {
 
   showModal() {
     this.modalTarget.classList.remove("hidden")
+
+    if (this.canModify()) {
+      this.actionsTarget.classList.remove("hidden")
+    } else {
+      this.actionsTarget.classList.add("hidden")
+    }
   }
 
   close() {

@@ -5,7 +5,11 @@
   <%= render partial: "header" %>
 
   <!-- Comments Stream -->
-  <%= render partial: "stream" %>
+  <div class="flex-1 overflow-y-auto p-6 space-y-4" id="comments">
+    <turbo-frame id="comments_stream">
+      <%= render partial: "stream" %>
+    </turbo-frame>
+  </div>
 
   <!-- Footer: Entering comment text (or editing mode) -->
   <%= render partial: "footer" %>

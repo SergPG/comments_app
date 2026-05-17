@@ -1,14 +1,33 @@
-<div id="<%= dom_id(comment) %>"
-  class="flex items-start gap-3 max-w-3xl mb-3 cursor-pointer"
-  data-action="click->comments#open"
-  data-comment="<%= comment.to_json(only: [:id, :body, :user_id]) %>"
+<% is_mine = comment.user == current_user %>
+
+<div id="<%= dom_id(comment) %>" class="flex <%= is_mine ? 'justify-end' : 'justify-start' %> mb-3"
+     data-action="click->comments#open"
+     data-comment="<%= comment.to_json(only: [:id, :body, :user_id]) %>"
 >
-  <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs">
-    <%= comment.user.username.first %>
+  <% unless is_mine %>
+    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs mr-2">
+      <%= comment.user.username.first.upcase %>
+    </div>
+  <% end %>
+
+  <!-- bubble -->
+  <div class="p-3 rounded-xl shadow-sm max-w-md
+    <%= is_mine ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-white text-gray-800 border rounded-bl-sm' %>">
+
+    <% unless is_mine %>
+      <p class="text-xs font-bold mb-1 text-gray-500">
+        <%= comment.user.username %>
+      </p>
+    <% end %>
+
+    <p class="text-sm leading-snug">
+      <%= comment.body %>
+    </p>
   </div>
 
-  <div class="bg-white p-3 rounded-xl shadow-sm">
-    <p class="text-xs font-bold"><%= comment.user.username %></p>
-    <p><%= comment.body %></p>
-  </div>
+  <% if is_mine %>
+    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs ml-2">
+      <%= comment.user.username.first.upcase %>
+    </div>
+  <% end %>
 </div>

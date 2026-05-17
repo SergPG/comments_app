@@ -5,41 +5,64 @@
       <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
       <span class="font-bold text-gray-700">Active users</span>
     </div>
-    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-medium">Login Text</span>
   </div>
 
   <div class="flex-1 overflow-y-auto p-2 space-y-1">
-    <template x-for="user in users" :key="user.id">
-      <button
-        @click="switchUser(user)"
-        class="w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-left"
-        :class="currentUser.id === user.id ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-200 text-gray-700'"
-      >
+
+    <% @users.each do |user| %>
+
+      <%= link_to root_path(user_id: user.id), class: class_names(
+              "w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-left flex",
+              { "bg-blue-600 text-white shadow-md": user == @selected_user,
+                "hover:bg-gray-200 text-gray-700": user != @selected_user } ) do %>
         <!-- Avatar -->
         <div class="relative flex-shrink-0">
-          <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm"
-               :class="currentUser.id === user.id ? 'bg-white text-blue-600' : 'bg-blue-100 text-blue-600'">
-            <span x-text="user.name.charAt(0)"></span>
+
+          <div class="<%= class_names("w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm",
+                                      { "bg-white text-blue-600": user == @selected_user,
+                                        "bg-blue-100 text-blue-600": user != @selected_user })
+                      %>">
+            <%= user.username.first.upcase %>
           </div>
-          <div x-show="currentUser.id === user.id" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></div>
+
+          <% if user == @selected_user%>
+            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></div>
+          <% end %>
         </div>
+
         <!-- Info -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between">
-            <p class="font-semibold truncate text-sm" :class="currentUser.id === user.id ? 'text-white' : 'text-gray-900'" x-text="user.name"></p>
-            <span class="text-xs opacity-70" x-text="user.role"></span>
+            <p class="<%= class_names("font-semibold truncate text-sm",
+                            { "text-white": user == @selected_user,
+                              "text-gray-900": user != @selected_user }) %>">
+              <%= user.username %>
+            </p>
           </div>
-          <p class="text-xs truncate opacity-80 mt-0.5" x-text="currentUser.id === user.id ? 'Ви зараз тут' : 'Клікніть щоб увійти'"></p>
         </div>
-      </button>
-    </template>
+
+      <% end %>
+
+    <% end %>
+
   </div>
 
   <div class="p-4 border-t border-gray-200 bg-white flex items-center gap-3">
-    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold" x-text="currentUser.name.charAt(0)"></div>
+    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+      <%= current_user&.username&.first.to_s  %>
+    </div>
     <div class="flex-1 min-w-0">
       <span class="text-xs text-gray-400 block leading-tight">You are logged in as:</span>
-      <span class="font-bold text-gray-800 truncate block text-sm" x-text="currentUser.name"></span>
+      <span class="font-bold text-gray-800 truncate block text-sm">
+        <%= current_user&.username.to_s  %>
+      </span>
+    </div>
+    <div class="shrink-0">
+      <%= button_to destroy_user_session_path, method: :delete,
+            class: "text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-medium hover:bg-blue-200 transition",
+            form_class: "inline-block" do %>
+        Log out
+      <% end %>
     </div>
   </div>
 </aside>
