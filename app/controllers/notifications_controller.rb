@@ -16,6 +16,10 @@ class NotificationsController < ApplicationController
     end
   end
 
+  def mark_all_as_read
+    current_user.received_notifications.unread.update_all(read_at: Time.current)
+  end
+
   private
 
   def set_notification

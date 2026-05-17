@@ -6,8 +6,7 @@ Rails.application.routes.draw do
   resources :comments, only: %i[create update destroy]
 
   resources :notifications, only: %i[index] do
-    member do
-      patch :mark_as_read
-    end
+    patch :mark_as_read, on: :member
+    patch :mark_all_as_read, on: :collection
   end
 end

@@ -1,0 +1,24 @@
+<div id="<%= dom_id(notification) %>"
+     class="p-3 transition hover:bg-gray-50 flex items-start gap-2.5 <%= 'bg-blue-50/50' unless notification.read? %>">
+
+  <% unless notification.read? %>
+    <div class="w-2 h-2 mt-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+  <% end %>
+
+  <div class="flex-1 min-w-0">
+    <p class="text-xs text-gray-700 <%= 'font-semibold' unless notification.read? %>">
+      <%= notification.actor.username %> commented on your post
+    </p>
+
+    <span class="text-[10px] text-gray-400 mt-1 block">
+      <%= time_ago_in_words(notification.created_at) %> ago
+    </span>
+  </div>
+
+  <%= button_to mark_as_read_notification_path(notification),
+                method: :patch,
+                form: { data: { turbo_stream: true } },
+                class: "text-xs text-gray-400 hover:text-blue-600 p-0.5" do %>
+    ✓
+  <% end %>
+</div>
