@@ -20,11 +20,181 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* Стиль для скролбару у стилі Telegram */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbcbcb; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-gray-100 font-sans h-screen overflow-hidden"  x-data="appState()">
+    <% if notice.present? || alert.present? %>
+      <div class="fixed top-4 right-4 z-50 space-y-2 pointer-events-none">
+        <% if notice %>
+          <div class="bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg text-sm pointer-events-auto">
+            <%= notice %>
+          </div>
+        <% end %>
+        <% if alert %>
+          <div class="bg-red-500 text-white px-4 py-2 rounded-xl shadow-lg text-sm pointer-events-auto">
+            <%= alert %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="flex h-full w-full max-w-[1600px] mx-auto bg-white shadow-2xl overflow-hidden">
+			<%= yield %>
+    </div>
+
+    <script>
+			function appState() {
+				return {
+					// Статичні користувачі для логіну
+					users: [
+						{ id: 1, name: 'Олександр (Ви)', role: 'Розробник' },
+						{ id: 2, name: 'Дмитро Мельник', role: 'Менеджер' },
+						{ id: 3, name: 'Анна Ковальчук', role: 'Тестувальник' }
+					],
+					currentUser: { id: 1, name: 'Олександр (Ви)', role: 'Розробник' },
+
+					// Стартові коментарі
+					comments: [
+						{ id: 1, userId: 2, userName: 'Дмитро Мельник', body: 'Всім привіт! Як просувається інтеграція з Meilisearch?', time: '18:30', edited: false },
+						{ id: 2, userId: 1, userName: 'Олександр (Ви)', body: 'Привіт. Вже налаштував індексацію для таски pluginseo. Пошук працює миттєво.', time: '18:32', edited: false },
+						{ id: 3, userId: 3, userName: 'Анна Ковальчук', body: 'Супер! Якраз тестую повідомлення на фронтенді, все оновлюється через HTMX.', time: '18:35', edited: false },
+						{ id: 4, userId: 2, userName: 'Дмитро Мельник', body: 'Чудово, треба буде ще додати можливість видалення коментарів з бази.', time: '18:40', edited: false }
+					],
+
+					// Сповіщення
+					notifications: [
+						{ id: 1, text: 'Дмитро Мельник згадав вас у коментарі', time: '18:30', read: false },
+						{ id: 2, text: 'Анна Ковальчук додала новий звіт про баг', time: '15:24', read: true },
+						{ id: 3, text: 'Оновлено індекс Meilisearch для бази коментарів', time: '12:01', read: false }
+					],
+
+					searchQuery: '',
+					inputMessage: '',
+					activeCommentMenu: null,
+					editingComment: null,
+
+					// Логіка Meilisearch імітації (фільтр по тексту body)
+					filteredComments() {
+						if (!this.searchQuery.trim()) return this.comments;
+						return this.comments.filter(c =>
+							c.body.toLowerCase().includes(this.searchQuery.toLowerCase())
+						);
+					},
+
+					// Перемикання юзера (Login)
+					switchUser(user) {
+						this.currentUser = user;
+						// Оновлюємо ім'я у списку повідомлень для наочності
+						this.comments.forEach(c => {
+							if (c.userId === user.id) {
+								c.userName = user.name;
+							}
+						});
+					},
+
+					// Додавання або редагування повідомлення
+					submitMessage() {
+						if (!this.inputMessage.trim()) return;
+
+						if (this.editingComment) {
+							// Режим редагування
+							const index = this.comments.findIndex(c => c.id === this.editingComment.id);
+							if (index !== -1) {
+								this.comments[index].body = this.inputMessage;
+								this.comments[index].edited = true;
+							}
+							this.editingComment = null;
+						} else {
+							// Режим створення нового коментаря
+							const now = new Date();
+							const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+							this.comments.push({
+								id: Date.now(),
+								userId: this.currentUser.id,
+								userName: this.currentUser.name,
+								body: this.inputMessage,
+								time: timeStr,
+								edited: false
+							});
+
+							// Імітуємо появу сповіщення для інших
+							this.notifications.unshift({
+								id: Date.now(),
+								text: `Новий коментар від користувача ${this.currentUser.name}`,
+								time: 'Щойно',
+								read: false
+							});
+						}
+
+						this.inputMessage = '';
+						this.scrollToBottom();
+					},
+
+					// Перевірка прав на модифікацію коментаря
+					canModify(comment) {
+						if (!comment) return false;
+						return comment.userId === this.currentUser.id;
+					},
+
+					// По кліку на коментар відкриваємо опції
+					handleCommentClick(comment) {
+						this.activeCommentMenu = comment;
+					},
+
+					// Початок редагування
+					startEdit(comment) {
+						this.editingComment = comment;
+						this.inputMessage = comment.body;
+						this.activeCommentMenu = null;
+					},
+
+					cancelEdit() {
+						this.editingComment = null;
+						this.inputMessage = '';
+					},
+
+					// Видалення
+					deleteComment(comment) {
+						this.comments = this.comments.filter(c => c.id !== comment.id);
+						this.activeCommentMenu = null;
+						if (this.editingComment?.id === comment.id) {
+							this.cancelEdit();
+						}
+					},
+
+					// Рахунок непрочитаних сповіщень
+					unreadCount() {
+						return this.notifications.filter(n => !n.read).length;
+					},
+
+					markAllAsRead() {
+						this.notifications.forEach(n => n.read = true);
+					},
+
+					scrollToBottom() {
+						setTimeout(() => {
+							const container = document.getElementById('comments-container');
+							container.scrollTop = container.scrollHeight;
+						}, 50);
+					}
+				}
+			}
+    </script>
+
+
+
+
+
   </body>
 </html>
