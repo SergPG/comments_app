@@ -6,6 +6,12 @@ class User < ApplicationRecord
 
   has_many :comments
 
+  has_many :received_notifications, class_name: "Notification",
+           foreign_key: :recipient_id, dependent: :destroy
+
+  has_many :sent_notifications, class_name: "Notification",
+           foreign_key: :actor_id, dependent: :destroy
+
   before_validation :normalize_username
   before_save :normalize_username
 
