@@ -5,6 +5,8 @@ class HomeController < ApplicationController
     @comments = fetch_comments
 
     @notifications = current_user.received_notifications.unread
+
+    @comment = Comment.new
   end
 
   private

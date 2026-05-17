@@ -1,0 +1,14 @@
+<div id="<%= dom_id(comment) %>"
+  class="flex items-start gap-3 max-w-3xl mb-3 cursor-pointer"
+  data-action="click->comments#open"
+  data-comment="<%= comment.to_json(only: [:id, :body, :user_id]) %>"
+>
+  <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs">
+    <%= comment.user.username.first %>
+  </div>
+
+  <div class="bg-white p-3 rounded-xl shadow-sm">
+    <p class="text-xs font-bold"><%= comment.user.username %></p>
+    <p><%= comment.body %></p>
+  </div>
+</div>

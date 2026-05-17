@@ -1,53 +1,7 @@
-<div class="flex-1 overflow-y-auto p-6 space-y-4" id="comments-container">
+<div class="flex-1 overflow-y-auto p-6 space-y-4" id="comments">
 
-  <div x-show="searchQuery" class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm text-orange-800 flex items-center justify-between sticky top-0 shadow-sm">
-    <span>Search results: <strong x-text="searchQuery"></strong></span>
-    <button @click="searchQuery = ''" class="text-xs underline font-semibold hover:text-orange-900">Reset filter</button>
-  </div>
-
-  <!-- Comments Stream -->
-  <template x-for="comment in filteredComments()" :key="comment.id">
-    <div class="flex items-start gap-3 max-w-3xl" :class="comment.userId === currentUser.id ? 'ml-auto flex-row-reverse' : ''">
-
-      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm flex-shrink-0"
-           :class="comment.userId === currentUser.id ? 'bg-blue-600' : 'bg-gray-500'">
-        <span x-text="comment.userName.charAt(0)"></span>
-      </div>
-
-      <!-- Message cloud -->
-      <div class="relative group">
-        <div
-          @click="handleCommentClick(comment)"
-          class="p-3 rounded-2xl shadow-sm text-sm cursor-pointer transition-all duration-200 relative"
-          :class="comment.userId === currentUser.id
-                                    ? 'bg-blue-500 text-white rounded-tr-none hover:bg-blue-600'
-                                    : 'bg-white text-gray-800 rounded-tl-none border border-gray-100 hover:bg-gray-50'"
-        >
-          <!-- Comment author (shown if not the current user) -->
-          <p x-show="comment.userId !== currentUser.id" class="text-xs font-bold text-blue-600 mb-1" x-text="comment.userName"></p>
-
-          <!-- Comment text -->
-          <p class="whitespace-pre-wrap break-words leading-relaxed" x-text="comment.body"></p>
-
-          <!-- Metadata (time + edit marker) -->
-          <div class="flex items-center justify-end gap-1 mt-1 text-[10px] opacity-75">
-            <span x-show="comment.edited" class="italic">edited</span>
-            <span x-text="comment.time"></span>
-          </div>
-
-          <span class="absolute top-1 right-2 opacity-0 group-hover:opacity-40 text-[10px]" :class="comment.userId === currentUser.id ? 'text-white' : 'text-gray-500'">
-                ⚙️ Options
-            </span>
-        </div>
-      </div>
-
-    </div>
-  </template>
-
-  <!-- Empty search state -->
-  <div x-show="filteredComments().length === 0" class="text-center py-12 text-gray-400">
-    <p class="text-lg">No comments found</p>
-    <p class="text-xs mt-1">Try changing your search query.</p>
-  </div>
+  <% @comments.each do |comment| %>
+    <%= render "comments/comment", comment: comment %>
+  <% end %>
 
 </div>
