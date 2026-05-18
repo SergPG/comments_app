@@ -31,7 +31,7 @@ module Notifications
     def create_notification(user)
       return if user == comment.user
 
-      Notification.create!(
+      Notification.find_or_create_by!(
         recipient: user,
         actor: comment.user,
         notifiable: comment

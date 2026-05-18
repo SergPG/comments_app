@@ -13,7 +13,6 @@ class User < ApplicationRecord
            foreign_key: :actor_id, dependent: :destroy
 
   before_validation :normalize_username
-  before_save :normalize_username
 
   validates :username, presence: true, uniqueness: true
 
