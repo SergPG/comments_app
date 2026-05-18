@@ -3,7 +3,7 @@ import { FetchRequest } from "@rails/request.js"
 
 // Connects to data-controller="comments"
 export default class extends Controller {
-  static targets = ["modal", "actions"]
+  static targets = ["modal", "actions", "forbiddenMessage"]
 
   connect() {
     this.activeComment = null
@@ -20,8 +20,10 @@ export default class extends Controller {
 
     if (this.canModify()) {
       this.actionsTarget.classList.remove("hidden")
+      this.forbiddenMessageTarget.classList.add("hidden")
     } else {
       this.actionsTarget.classList.add("hidden")
+      this.forbiddenMessageTarget.classList.remove("hidden")
     }
   }
 
@@ -54,7 +56,11 @@ export default class extends Controller {
   }
 
   canModify() {
-    const currentUserId = Number(document.body.dataset.currentUserId)
-    return this.activeComment?.user_id === currentUserId
+    const meta = document.querySelector("meta[name='current-user-id']")
+    const currentUserId = Number(meta?.content)
+
+    const commentUserId = Number(this.activeComment?.user_id)
+
+    return currentUserId && commentUserId && currentUserId === commentUserId
   }
 }

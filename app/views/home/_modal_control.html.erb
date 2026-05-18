@@ -2,24 +2,36 @@
      data-comments-target="modal">
 
   <div class="bg-white rounded-2xl shadow-2xl p-5 max-w-sm w-full mx-4">
-    <h3 class="font-bold text-base mb-2">Comment management</h3>
-    <p class="text-xs text-gray-500 mb-4 bg-gray-50 p-3 rounded-xl italic">
-      Selected comment
-    </p>
-    <!-- EDIT / DELETE -->
-    <div>
-      <button data-action="click->comments#edit" class="w-full bg-blue-50 text-blue-600 py-2 rounded-xl mb-2">
+
+    <h3 class="font-bold text-base mb-2">
+      Comment actions
+    </h3>
+
+    <!-- message if not allowed -->
+    <div data-comments-target="forbiddenMessage"
+         class="hidden text-sm text-gray-600 bg-gray-50 p-3 rounded-xl mb-4">
+      You can only edit or delete your own comments.
+    </div>
+
+    <!-- allowed actions -->
+    <div data-comments-target="actions">
+
+      <button data-action="click->comments#edit"
+              class="w-full bg-blue-50 text-blue-600 py-2 rounded-xl mb-2">
         ✏️ Edit comment
       </button>
 
-      <button data-action="click->comments#delete" class="w-full bg-red-50 text-red-600 py-2 rounded-xl">
+      <button data-action="click->comments#delete"
+              class="w-full bg-red-50 text-red-600 py-2 rounded-xl">
         🗑 Delete comment
       </button>
+
     </div>
 
-    <button data-action="click->comments#close" class="w-full mt-3 bg-gray-100 py-2 rounded-xl">
+    <button data-action="click->comments#close"
+            class="w-full mt-3 bg-gray-100 py-2 rounded-xl">
       Cancel
     </button>
-  </div>
 
+  </div>
 </div>
