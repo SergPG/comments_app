@@ -13,9 +13,10 @@ export default class extends Controller {
 	}
 
 	close(event) {
-		if (!this.element.contains(event.target)) {
-			this.open = false
-			this.menuTarget.classList.add("hidden")
-		}
+		if (event.target.closest("[data-dropdown-ignore]")) return
+		if (this.element.contains(event.target)) return
+
+		this.open = false
+		this.menuTarget.classList.add("hidden")
 	}
 }

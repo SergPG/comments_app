@@ -17,7 +17,7 @@
 
   <%= button_to mark_as_read_notification_path(notification),
                 method: :patch,
-                form: { data: { turbo_stream: true } },
+                form: { data: { turbo_stream: true } }, "data-dropdown-ignore": true,
                 class: "text-xs text-gray-400 hover:text-blue-600 p-0.5" do %>
     ✓
   <% end %>
