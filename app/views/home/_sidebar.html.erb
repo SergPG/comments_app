@@ -9,6 +9,90 @@
 
   <div class="flex-1 overflow-y-auto p-2 space-y-1">
 
+    <%= link_to root_path,
+                class: class_names(
+                  "w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                  {
+                    "bg-blue-600 text-white shadow-md": @selected_user.nil?,
+                    "hover:bg-gray-200 text-gray-700": @selected_user.present?
+                  }
+                ) do %>
+
+      <!-- Icon -->
+      <div class="<%= class_names(
+                        "w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm",
+                        {
+                          "bg-white text-blue-600": @selected_user.nil?,
+                          "bg-blue-100 text-blue-600": @selected_user.present?
+                        }
+                      ) %>">
+        #
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <p class="<%= class_names(
+                        "font-semibold text-sm",
+                        {
+                          "text-white": @selected_user.nil?,
+                          "text-gray-900": @selected_user.present?
+                        }
+                      ) %>">
+          All comments
+        </p>
+
+        <p class="<%= class_names(
+                        "text-xs",
+                        {
+                          "text-blue-100": @selected_user.nil?,
+                          "text-gray-500": @selected_user.present?
+                        }
+                      ) %>">
+          Global feed
+        </p>
+      </div>
+
+    <% end %>
+
+    <%= link_to root_path(user_id: current_user.id), class: class_names(
+      "w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-left flex",
+      { "bg-blue-600 text-white shadow-md": current_user == @selected_user,
+        "hover:bg-gray-200 text-gray-700": current_user != @selected_user } ) do %>
+      <!-- Avatar -->
+      <div class="relative flex-shrink-0">
+
+        <div class="<%= class_names("w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm",
+                                    { "bg-white text-blue-600": current_user == @selected_user,
+                                      "bg-blue-100 text-blue-600": current_user != @selected_user })
+        %>">
+          <%= current_user.username.first.upcase %>
+        </div>
+
+        <% if current_user == @selected_user%>
+          <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></div>
+        <% end %>
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+          <p class="<%= class_names("font-semibold truncate text-sm",
+                                    { "text-white": current_user == @selected_user,
+                                      "text-gray-900": current_user != @selected_user }) %>">
+            <%= current_user.username %>
+          </p>
+
+          <p class="<%= class_names(
+                          "text-xs",
+                          {
+                            "text-blue-100": current_user == @selected_user,
+                            "text-gray-500": current_user != @selected_user
+                          }
+                        ) %>">
+            (You)
+          </p>
+      </div>
+    <% end %>
+
     <% @users.each do |user| %>
 
       <%= link_to root_path(user_id: user.id), class: class_names(
