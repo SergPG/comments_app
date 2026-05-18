@@ -1,4 +1,4 @@
-<div class="space-y-2">
+<div class="flex flex-col gap-2 py-2">
   <% @comments.each do |comment| %>
     <%= render "comments/comment", comment: comment %>
   <% end %>

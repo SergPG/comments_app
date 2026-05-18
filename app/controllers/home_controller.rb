@@ -30,6 +30,6 @@ class HomeController < ApplicationController
       scope = scope.where(id: ids)
     end
 
-    scope.order(created_at: :asc)
+    scope.order(created_at: :desc)
   end
 end
